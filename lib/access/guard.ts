@@ -183,7 +183,11 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: '/rankings', label: 'Classements', anyOf: ['leaderboard.aggregate'], icon: 'rankings' },
   { href: '/analytics', label: 'Analyses', anyOf: ['analytics.read'], icon: 'analytics' },
   { href: '/runs', label: 'Courses', anyOf: ['analytics.read'], icon: 'runs' },
+  { href: '/quality', label: 'Qualité', anyOf: ['quality.read'], icon: 'quality' },
+  { href: '/support', label: 'Support', anyOf: ['support.manage'], icon: 'support' },
   { href: '/audit', label: 'Journal', anyOf: ['audit.read'], icon: 'audit' },
+  { href: '/settings/app', label: 'Configuration', anyOf: ['config.write'], icon: 'config' },
+  { href: '/settings', label: 'Paramètres', anyOf: ['overview.read'], icon: 'settings' },
 ];
 
 export function visibleNav(identity: AdminIdentity | null | undefined, items: readonly NavItem[] = NAV_ITEMS): NavItem[] {

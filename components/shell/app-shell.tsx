@@ -22,7 +22,7 @@ import { SessionWatcher } from './session-watcher';
 import { ThemeMenu } from './theme-menu';
 
 /** Pages dont la barre supérieure porte le sélecteur de période (état partagé par l'URL). */
-const PERIOD_ROUTES = ['/overview', '/analytics', '/runs'];
+const PERIOD_ROUTES = ['/overview', '/analytics', '/runs', '/quality'];
 
 export function AppShell({ session, sidebar, children }: { session: AdminSessionInfo; sidebar: SidebarPref; children: ReactNode }) {
   return (

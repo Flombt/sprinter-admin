@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ApiError, isApiError, postJson } from '@/lib/rpc/client';
 import { errorMessage } from '@/lib/rpc/errors';
+import { clearClientSessionState } from '@/lib/client-session';
 import { hardNavigate } from '@/lib/navigation';
 
 export type LoginNotice = 'inactivite' | 'expiree' | 'acces';
@@ -37,6 +38,9 @@ export function LoginView({ initialStep, notice, next }: { initialStep: Step; no
   const [email, setEmail] = useState('');
   const [error, setError] = useState<ApiError | null>(null);
   const [denied, setDenied] = useState(notice === 'acces');
+
+  // Aucun état de la session précédente (motif d'accès…) ne survit au retour à la connexion.
+  useEffect(() => clearClientSessionState(), []);
 
   const goTo = useCallback((nextStep: Step) => {
     setError(null);

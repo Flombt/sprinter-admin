@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { PeriodPicker } from '@/components/period/period-picker';
+import { AccessReasonProvider } from '@/components/security/access-reason';
+import { ReauthProvider } from '@/components/security/reauth';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Kbd } from '@/components/ui/kbd';
@@ -26,10 +28,14 @@ export function AppShell({ session, sidebar, children }: { session: AdminSession
   return (
     <AdminProvider value={session}>
       <TooltipProvider delayDuration={200}>
-        <CommandPaletteProvider>
-          <ShellLayout initialSidebar={sidebar}>{children}</ShellLayout>
-          <SessionWatcher absoluteAt={session.absoluteAt} />
-        </CommandPaletteProvider>
+        <AccessReasonProvider>
+          <ReauthProvider>
+            <CommandPaletteProvider>
+              <ShellLayout initialSidebar={sidebar}>{children}</ShellLayout>
+              <SessionWatcher absoluteAt={session.absoluteAt} />
+            </CommandPaletteProvider>
+          </ReauthProvider>
+        </AccessReasonProvider>
       </TooltipProvider>
     </AdminProvider>
   );

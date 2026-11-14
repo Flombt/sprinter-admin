@@ -7,6 +7,7 @@ import {
   whoamiInput,
   whoamiOutput,
 } from './schemas/core';
+import { analyticsInput, analyticsOutput, leaderboardInput, leaderboardOutput, runsStatsInput, runsStatsOutput } from './schemas/analytics';
 import { getUserInput, searchUsersInput, searchUsersOutput, userDetail } from './schemas/users';
 
 /**
@@ -24,6 +25,9 @@ export const rpcRegistry = {
   admin_list_audit: { input: listAuditInput, output: listAuditOutput },
   admin_search_users: { input: searchUsersInput, output: searchUsersOutput },
   admin_get_user: { input: getUserInput, output: userDetail },
+  admin_leaderboard: { input: leaderboardInput, output: leaderboardOutput },
+  admin_analytics: { input: analyticsInput, output: analyticsOutput },
+  admin_runs_stats: { input: runsStatsInput, output: runsStatsOutput },
 } as const satisfies Record<string, RpcDefinition>;
 
 export type RpcName = keyof typeof rpcRegistry;

@@ -4,6 +4,7 @@ import { handleFunction } from './functions.ts';
 import { handleRpc } from './rpc.ts';
 import './rpc-core.ts';
 import './users.ts';
+import './analytics.ts';
 import { resetState } from './state.ts';
 
 /**

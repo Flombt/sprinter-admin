@@ -22,6 +22,7 @@ import {
   supportItem,
   updateSupportInput,
 } from './schemas/ops';
+import { getReportInput, listReportsInput, listReportsOutput, moderateInput, moderateOutput, reportDetail } from './schemas/moderation';
 import { getUserInput, searchUsersInput, searchUsersOutput, userDetail } from './schemas/users';
 
 /**
@@ -48,6 +49,9 @@ export const rpcRegistry = {
   admin_get_config: { input: getConfigInput, output: getConfigOutput },
   admin_set_config: { input: setConfigInput, output: setConfigOutput },
   admin_export_aggregates: { input: exportInput, output: exportOutput },
+  admin_list_reports: { input: listReportsInput, output: listReportsOutput },
+  admin_get_report: { input: getReportInput, output: reportDetail },
+  admin_moderate: { input: moderateInput, output: moderateOutput },
 } as const satisfies Record<string, RpcDefinition>;
 
 export type RpcName = keyof typeof rpcRegistry;

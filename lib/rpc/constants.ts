@@ -122,3 +122,58 @@ export const SUPPORT_STATUS_LABELS: Record<string, string> = {
 };
 
 export const SYNC_STATUS_LABELS: Record<string, string> = { ok: 'OK', partial: 'Partielle', error: 'Erreur' };
+
+/* ------------------------------------------------------------------ Classements et analyses (4c) */
+
+export const LEADERBOARD_METRICS = [
+  'runs_count',
+  'distance_total',
+  'longest_run',
+  'active_days',
+  'active_weeks',
+  'best_effort_1k',
+  'best_effort_5k',
+  'best_effort_10k',
+  'best_effort_21k',
+] as const;
+export type LeaderboardMetric = (typeof LEADERBOARD_METRICS)[number];
+export const LEADERBOARD_METRIC_LABELS: Record<LeaderboardMetric, string> = {
+  runs_count: 'Nombre de courses',
+  distance_total: 'Distance cumulée',
+  longest_run: 'Plus longue course',
+  active_days: 'Jours actifs',
+  active_weeks: 'Semaines actives',
+  best_effort_1k: 'Meilleur 1 km',
+  best_effort_5k: 'Meilleur 5 km',
+  best_effort_10k: 'Meilleur 10 km',
+  best_effort_21k: 'Meilleur semi-marathon',
+};
+
+export const LEADERBOARD_PERIODS = ['week', 'month', 'year', 'all'] as const;
+export type LeaderboardPeriod = (typeof LEADERBOARD_PERIODS)[number];
+export const LEADERBOARD_PERIOD_LABELS: Record<LeaderboardPeriod, string> = {
+  week: 'Semaine',
+  month: 'Mois',
+  year: 'Année',
+  all: 'Toujours',
+};
+
+export const ANALYTICS_VIEWS = [
+  'signups',
+  'activity',
+  'distance_histogram',
+  'duration_histogram',
+  'frequency_histogram',
+  'retention',
+  'platform_compare',
+  'breakdown_country',
+  'breakdown_city',
+  'breakdown_age_band',
+] as const;
+export type AnalyticsView = (typeof ANALYTICS_VIEWS)[number];
+
+/** Seuil de confidentialité k (§10.4, §16 n° 10). */
+export const K_ANONYMITY = 10;
+
+export const VALIDITY_LABELS: Record<string, string> = { valid: 'Valides', suspect: 'Suspectes', invalid: 'Invalides' };
+export const SOURCE_LABELS: Record<string, string> = { sprinter: 'Sprinter', healthkit: 'Apple Santé', gpx: 'Import GPX' };

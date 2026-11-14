@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { listAuditOutput, overviewOutput, whoamiOutput } from '@/lib/rpc/schemas/core';
+import { analyticsOutput, leaderboardOutput, runsStatsOutput } from '@/lib/rpc/schemas/analytics';
 import { searchUsersOutput, userActionOutput, userDetail } from '@/lib/rpc/schemas/users';
 import { handleAuth } from './auth.ts';
 import { handleRpc } from './rpc.ts';
@@ -7,6 +8,8 @@ import './rpc-core.ts';
 import { handleFunction } from './functions.ts';
 import { mockUuid } from './random.ts';
 import './users.ts';
+import './analytics.ts';
+import { expireRecentAuthentication } from './auth.ts';
 import { ADMIN_ACCOUNTS, MOCK_OTP_CODE, MOCK_TOTP_CODE, resetState } from './state.ts';
 
 /**
@@ -76,5 +79,35 @@ describe('faux backend conforme au contrat', () => {
     const mismatch = handleFunction('admin-user-action', { user_id: camille, action: 'process_deletion', reason: 'support', confirmation: 'SUPPRIMER 00000000' }, token);
     expect(mismatch?.body).toEqual({ error: 'confirmation_mismatch' });
     expect(handleRpc('admin_search_users', { p_filters: { age: 30 } }, token).body).toMatchObject({ message: 'invalid_parameter:filters.age' });
+  });
+
+  it('admin_leaderboard, admin_analytics et admin_runs_stats (4c)', () => {
+    const token = sessionToken(ADMIN_ACCOUNTS.owner);
+    const aggregate = leaderboardOutput.parse(handleRpc('admin_leaderboard', { p_metric: 'distance_total', p_period: 'month', p_filters: {} }, token).body);
+    expect(aggregate.mode).toBe('aggregate');
+    if (aggregate.mode === 'aggregate') expect(aggregate.histogram.every((b) => b.users >= 10)).toBe(true);
+    const nominative = leaderboardOutput.parse(
+      handleRpc('admin_leaderboard', { p_metric: 'distance_total', p_period: 'month', p_mode: 'nominative', p_reason: 'technical' }, token).body,
+    );
+    expect(nominative.mode === 'nominative' && nominative.items.length).toBe(50);
+    expect(JSON.stringify(nominative)).not.toContain('@');
+    expect(handleRpc('admin_leaderboard', { p_metric: 'distance_total', p_period: 'month', p_mode: 'nominative' }, token).body).toMatchObject({ message: 'reason_required' });
+    expect(
+      handleRpc('admin_leaderboard', { p_metric: 'distance_total', p_period: 'month', p_mode: 'nominative', p_reason: 'support' }, sessionToken(ADMIN_ACCOUNTS.analyst)).body,
+    ).toMatchObject({ message: 'forbidden' });
+    expireRecentAuthentication();
+    expect(
+      handleRpc('admin_leaderboard', { p_metric: 'distance_total', p_period: 'month', p_mode: 'nominative', p_reason: 'support' }, token).body,
+    ).toMatchObject({ message: 'reauth_required' });
+    for (const view of ['signups', 'activity', 'distance_histogram', 'duration_histogram', 'frequency_histogram', 'retention', 'platform_compare', 'breakdown_country', 'breakdown_city', 'breakdown_age_band']) {
+      const body = handleRpc('admin_analytics', { p_view: view, p_from: '2026-10-01', p_to: '2026-10-31', p_filters: {} }, token).body;
+      expect(analyticsOutput.parse(body).view, view).toBe(view);
+    }
+    const city = analyticsOutput.parse(handleRpc('admin_analytics', { p_view: 'breakdown_city', p_from: '2026-10-01', p_to: '2026-10-31' }, token).body);
+    if (city.view === 'breakdown_city') {
+      expect(city.rows.every((r) => r.accounts >= 10)).toBe(true);
+      if (city.other) expect(city.other.accounts).toBeGreaterThanOrEqual(10);
+    }
+    expect(runsStatsOutput.parse(handleRpc('admin_runs_stats', { p_from: '2026-10-01', p_to: '2026-10-31' }, token).body).runs).toBeGreaterThan(0);
   });
 });

@@ -29,6 +29,8 @@ export async function executeRpc<N extends RpcName>(
   const input = definition.input.safeParse(rawInput ?? {});
   if (!input.success) {
     const param = issuePath(input.error);
+    // Motif absent ou invalide : même code que la base (`reason_required`), le site ouvre la boîte « Motif d'accès ».
+    if (param === 'reason' || param === 'reason_note') return { ok: false, code: 'reason_required' };
     return param ? { ok: false, code: 'invalid_parameter', param } : { ok: false, code: 'invalid_parameter' };
   }
 

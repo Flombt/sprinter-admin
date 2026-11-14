@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { listAuditOutput, overviewOutput, whoamiOutput } from '@/lib/rpc/schemas/core';
+import { searchUsersOutput, userActionOutput, userDetail } from '@/lib/rpc/schemas/users';
 import { handleAuth } from './auth.ts';
 import { handleRpc } from './rpc.ts';
 import './rpc-core.ts';
+import { handleFunction } from './functions.ts';
+import { mockUuid } from './random.ts';
+import './users.ts';
 import { ADMIN_ACCOUNTS, MOCK_OTP_CODE, MOCK_TOTP_CODE, resetState } from './state.ts';
 
 /**
@@ -54,5 +58,23 @@ describe('faux backend conforme au contrat', () => {
     expect(handleRpc('admin_overview', { p_from: '2025-01-01', p_to: '2026-10-31' }, sessionToken(ADMIN_ACCOUNTS.owner)).body).toMatchObject({
       message: 'invalid_parameter:period',
     });
+  });
+
+  it('admin_search_users, admin_get_user et admin-user-action (4b)', () => {
+    const token = sessionToken(ADMIN_ACCOUNTS.owner);
+    const search = handleRpc('admin_search_users', { p_q: 'camille.testeuse@', p_filters: { platform: ['android'] }, p_sort: '-signed_up_at', p_limit: 8 }, token);
+    const parsed = searchUsersOutput.parse(search.body);
+    expect(parsed.items[0]?.email_masked).toBe('c***@example.test');
+    const camille = mockUuid('user', 1);
+    const detail = userDetail.parse(handleRpc('admin_get_user', { p_user_id: camille, p_reason: 'support' }, token).body);
+    expect(detail.email).toBe('camille.testeuse@example.test');
+    expect(handleRpc('admin_get_user', { p_user_id: camille }, token).body).toMatchObject({ message: 'reason_required' });
+    const supportDetail = userDetail.parse(handleRpc('admin_get_user', { p_user_id: camille, p_reason: 'technical' }, sessionToken(ADMIN_ACCOUNTS.support)).body);
+    expect(supportDetail).toMatchObject({ age_band: null, age_band_hidden: true });
+    const action = handleFunction('admin-user-action', { user_id: camille, action: 'disable', reason: 'support' }, token);
+    expect(userActionOutput.parse(action?.body)).toMatchObject({ action: 'disable', status: 'disabled' });
+    const mismatch = handleFunction('admin-user-action', { user_id: camille, action: 'process_deletion', reason: 'support', confirmation: 'SUPPRIMER 00000000' }, token);
+    expect(mismatch?.body).toEqual({ error: 'confirmation_mismatch' });
+    expect(handleRpc('admin_search_users', { p_filters: { age: 30 } }, token).body).toMatchObject({ message: 'invalid_parameter:filters.age' });
   });
 });

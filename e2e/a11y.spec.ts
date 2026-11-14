@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectAccessible, login, resetMock } from './helpers';
+import { expectAccessible, login, openPalette, resetMock } from './helpers';
 
 test.beforeEach(async ({ request }) => {
   await resetMock(request);
@@ -29,7 +29,7 @@ test('axe : pages d’administration', async ({ page }) => {
 
 test('clavier : ⌘K ouvre la palette, Échap la ferme, lien d’évitement présent', async ({ page }) => {
   await login(page);
-  await page.keyboard.press('ControlOrMeta+k');
+  await openPalette(page);
   await expect(page.getByRole('dialog', { name: 'Palette de commandes' })).toBeVisible();
   await page.keyboard.type('journal');
   await page.keyboard.press('Enter');

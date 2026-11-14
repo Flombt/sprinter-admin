@@ -19,6 +19,12 @@ export async function expireRecentAuth(request: APIRequestContext): Promise<void
   expect(response.ok()).toBeTruthy();
 }
 
+/** Ouvre la palette ⌘K et attend que son champ soit prêt (chargement à la demande). */
+export async function openPalette(page: Page): Promise<void> {
+  await page.keyboard.press('ControlOrMeta+k');
+  await expect(page.getByPlaceholder('Rechercher une page, une action ou un utilisateur…')).toBeFocused();
+}
+
 /** Étapes e-mail + code ; s'arrête avant le TOTP si `totp` vaut false (session AAL1). */
 export async function login(page: Page, email: string = ADMIN_ACCOUNTS.owner, options: { totp?: boolean; next?: string } = {}): Promise<void> {
   await page.goto(options.next ? `/login?next=${encodeURIComponent(options.next)}` : '/login');
@@ -69,6 +75,8 @@ export async function forgeSessionMeta(context: BrowserContext, meta: Omit<Sessi
 
 /** Aucune violation axe « critical » ni « serious » (WCAG 2.0 → 2.2, niveaux A et AA). */
 export async function expectAccessible(page: Page, label: string): Promise<void> {
+  // Les contrastes se mesurent une fois les animations d'apparition terminées (opacité finale).
+  await page.waitForFunction(() => document.getAnimations().every((animation) => animation.playState !== 'running'));
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
   const blocking = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
   const summary = blocking.map((v) => `${v.impact} · ${v.id} : ${v.help} (${v.nodes.map((n) => n.target.join(' ')).slice(0, 3).join(' | ')})`);

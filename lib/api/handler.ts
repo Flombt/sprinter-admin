@@ -47,7 +47,13 @@ export function isSameOrigin(request: NextRequest): boolean {
 export async function readJsonBody(request: Request, maxBytes = 32_768): Promise<{ ok: true; value: unknown } | { ok: false }> {
   const type = request.headers.get('content-type') ?? '';
   if (!type.toLowerCase().startsWith('application/json')) return { ok: false };
-  const text = await request.text();
+  let text: string;
+  try {
+    text = await request.text();
+  } catch {
+    // Requête interrompue par le navigateur (navigation, annulation) : rien à traiter.
+    return { ok: false };
+  }
   if (text.length > maxBytes) return { ok: false };
   if (text.trim() === '') return { ok: true, value: {} };
   try {

@@ -452,6 +452,8 @@ function PlatformsPanel({ range, filters }: { range: DateRange; filters: Analyti
   const query = useAnalytics('platform_compare', range, filters);
   const data = asView(query.data, 'platform_compare');
   const rows = (data?.rows ?? []).map((r) => ({ ...r, label: PLATFORM_LABELS[r.platform] }));
+  const [selected, setSelected] = useState<number | null>(null);
+  const detail = selected !== null ? rows[selected] : undefined;
   return (
     <PanelState query={query}>
       <ChartCard
@@ -469,6 +471,7 @@ function PlatformsPanel({ range, filters }: { range: DateRange; filters: Analyti
             ]}
             formatValue={(v) => formatInteger(v)}
             formatX={(v) => v}
+            onSelect={setSelected}
           />
         }
         table={
@@ -488,6 +491,24 @@ function PlatformsPanel({ range, filters }: { range: DateRange; filters: Analyti
         }
         method={data?.method || 'Un compte utilisé sur les deux plateformes compte dans chacune.'}
       />
+      <Drawer open={detail !== undefined} onOpenChange={(open) => !open && setSelected(null)} title={detail ? detail.label : ''} description="Détail agrégé de la plateforme">
+        {detail ? (
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dt className="text-fg-muted">Comptes</dt>
+            <dd className="text-right font-medium">{formatInteger(detail.accounts)}</dd>
+            <dt className="text-fg-muted">Actifs sur la période</dt>
+            <dd className="text-right">{formatInteger(detail.active)}</dd>
+            <dt className="text-fg-muted">Part d’actifs</dt>
+            <dd className="text-right">{detail.accounts > 0 ? formatPercent(detail.active / detail.accounts) : EMPTY}</dd>
+            <dt className="text-fg-muted">Courses</dt>
+            <dd className="text-right">{formatInteger(detail.runs)}</dd>
+            <dt className="text-fg-muted">Distance</dt>
+            <dd className="text-right">{formatKm(detail.distance_km)}</dd>
+            <dt className="text-fg-muted">Courses par actif</dt>
+            <dd className="text-right">{detail.active > 0 ? formatDecimal(detail.runs / detail.active, 2) : EMPTY}</dd>
+          </dl>
+        ) : null}
+      </Drawer>
     </PanelState>
   );
 }
@@ -506,6 +527,8 @@ function BreakdownsPanel({ range, filters, dimension, onDimension }: { range: Da
   const tableRows = [...rows, ...otherRow];
   const chartRows = [...rows.slice(0, 15), ...otherRow];
   const id = useId();
+  const [selected, setSelected] = useState<number | null>(null);
+  const detail = selected !== null ? chartRows[selected] : undefined;
 
   return (
     <div className="flex flex-col gap-3">
@@ -542,6 +565,7 @@ function BreakdownsPanel({ range, filters, dimension, onDimension }: { range: Da
                 series={[{ key: 'accounts', label: 'Comptes', color: OKABE_ITO[0] as string }]}
                 formatValue={(v) => formatInteger(v)}
                 formatX={(v) => v}
+                onSelect={setSelected}
               />
             )
           }
@@ -572,6 +596,26 @@ function BreakdownsPanel({ range, filters, dimension, onDimension }: { range: Da
           }
           method={data?.method || 'Comptes distincts par valeur renseignée ; seuil de confidentialité k = 10.'}
         />
+        <Drawer open={detail !== undefined} onOpenChange={(open) => !open && setSelected(null)} title={detail ? detail.label : ''} description="Détail agrégé (≥ 10 comptes)">
+          {detail ? (
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              <dt className="text-fg-muted">Comptes</dt>
+              <dd className="text-right font-medium">{formatInteger(detail.accounts)}</dd>
+              <dt className="text-fg-muted">Courses</dt>
+              <dd className="text-right">{formatInteger(detail.runs)}</dd>
+              <dt className="text-fg-muted">Distance</dt>
+              <dd className="text-right">{formatKm(detail.distance_km)}</dd>
+              <dt className="text-fg-muted">Courses par compte</dt>
+              <dd className="text-right">{detail.accounts > 0 ? formatDecimal(detail.runs / detail.accounts, 1) : EMPTY}</dd>
+              {safe?.total ? (
+                <>
+                  <dt className="text-fg-muted">Part des comptes</dt>
+                  <dd className="text-right">{formatPercent(detail.accounts / Math.max(1, safe.total.accounts))}</dd>
+                </>
+              ) : null}
+            </dl>
+          ) : null}
+        </Drawer>
       </PanelState>
     </div>
   );

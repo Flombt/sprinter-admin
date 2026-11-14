@@ -78,7 +78,23 @@ test('analyses : comparaison de périodes, vue tableau, détail agrégé au clic
   await expect(page).toHaveURL(/tab=retention/);
   await expect(page.getByRole('table', { name: /Rétention par cohorte/ })).toBeVisible();
 
+  await page.getByRole('tab', { name: 'iOS / Android' }).click();
+  const platformChart = page.getByRole('figure', { name: 'Comparaison iOS et Android' });
+  await expect(platformChart.locator('svg').first()).toBeVisible();
+  const platformBox = await platformChart.boundingBox();
+  if (!platformBox) throw new Error('graphique introuvable');
+  await page.mouse.click(platformBox.x + platformBox.width * 0.3, platformBox.y + platformBox.height / 2);
+  await expect(page.getByRole('dialog').getByText('Détail agrégé de la plateforme')).toBeVisible();
+  await page.keyboard.press('Escape');
+
   await page.getByRole('tab', { name: 'Ventilations' }).click();
+  const breakdownChart = page.getByRole('figure', { name: 'Comptes par pays' });
+  await expect(breakdownChart.locator('svg').first()).toBeVisible();
+  const breakdownBox = await breakdownChart.boundingBox();
+  if (!breakdownBox) throw new Error('graphique introuvable');
+  await page.mouse.click(breakdownBox.x + breakdownBox.width * 0.15, breakdownBox.y + breakdownBox.height / 2);
+  await expect(page.getByRole('dialog').getByText('Détail agrégé (≥ 10 comptes)')).toBeVisible();
+  await page.keyboard.press('Escape');
   await page.getByRole('radio', { name: 'Ville' }).click();
   await expect(page).toHaveURL(/dim=city/);
   await page.getByRole('button', { name: 'Voir en tableau' }).click();

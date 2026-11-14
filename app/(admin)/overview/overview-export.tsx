@@ -1,6 +1,8 @@
 'use client';
 
-/** Export CSV des KPI quotidiens : livré avec la sous-phase 4d (`admin_export_aggregates`). */
-export function OverviewExport(_props: { from: string; to: string }) {
-  return null;
+import { ExportButton } from '@/components/exports/export-button';
+
+/** Export CSV des KPI quotidiens et de l'adoption des versions sur la période affichée. */
+export function OverviewExport({ from, to }: { from: string; to: string }) {
+  return <ExportButton kinds={['daily_kpis', 'versions']} from={from} to={to} />;
 }

@@ -2,11 +2,13 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { ExternalLinkIcon } from 'lucide-react';
+import { useState } from 'react';
 import { CategoryBarChart, ChartCard, OKABE_ITO } from '@/components/charts';
 import { SimpleTable } from '@/components/charts/simple-table';
 import { PageHeader } from '@/components/shell/page-header';
 import { ErrorState, Unavailable } from '@/components/states/states';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Drawer } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDay, formatInteger, formatPercent, plural } from '@/lib/format/fr';
 import { usePeriodState } from '@/lib/period/use-period';
@@ -57,6 +59,9 @@ export function QualityView({ defaultPeriod }: { defaultPeriod: DefaultPeriodPre
 
 function QualityContent({ data, busy }: { data: Quality; busy: boolean }) {
   const errors = data.errors_by_code.map((e) => ({ ...e, label: e.code }));
+  const [selected, setSelected] = useState<number | null>(null);
+  const detail = selected !== null ? errors[selected] : undefined;
+  const failing = errors.reduce((sum, e) => sum + e.devices, 0);
   return (
     <div className="flex flex-col gap-3" aria-busy={busy}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -103,6 +108,7 @@ function QualityContent({ data, busy }: { data: Quality; busy: boolean }) {
               series={[{ key: 'devices', label: 'Appareils', color: OKABE_ITO[5] as string }]}
               formatValue={(v) => formatInteger(v)}
               formatX={(v) => v}
+              onSelect={setSelected}
             />
           )
         }
@@ -118,6 +124,19 @@ function QualityContent({ data, busy }: { data: Quality; busy: boolean }) {
           />
         }
       />
+
+      <Drawer open={detail !== undefined} onOpenChange={(open) => !open && setSelected(null)} title={detail ? `Code ${detail.code}` : ''} description="Détail agrégé du code d’erreur">
+        {detail ? (
+          <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dt className="text-fg-muted">Appareils concernés</dt>
+            <dd className="text-right font-medium">{formatInteger(detail.devices)}</dd>
+            <dt className="text-fg-muted">Part des appareils en échec</dt>
+            <dd className="text-right">{failing > 0 ? formatPercent(detail.devices / failing) : '—'}</dd>
+            <dt className="text-fg-muted">Part des appareils vus</dt>
+            <dd className="text-right">{data.devices_seen > 0 ? formatPercent(detail.devices / data.devices_seen) : '—'}</dd>
+          </dl>
+        ) : null}
+      </Drawer>
 
       <div className="grid gap-3 lg:grid-cols-2">
         <Card>

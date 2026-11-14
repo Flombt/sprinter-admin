@@ -13,6 +13,12 @@ test('qualité de service : indicateurs, versions et « non disponible » pour l
   await expect(page.getByText('Rapports de plantage').locator('..').getByText('non disponible')).toBeVisible();
   await expect(page.getByRole('table', { name: 'Adoption des versions' })).toBeVisible();
   await expect(page.getByRole('table', { name: 'Échecs de synchronisation par version' })).toBeVisible();
+  const chart = page.getByRole('figure', { name: 'Appareils en échec par code d’erreur' });
+  await expect(chart.locator('svg').first()).toBeVisible();
+  const box = await chart.boundingBox();
+  if (!box) throw new Error('graphique introuvable');
+  await page.mouse.click(box.x + box.width * 0.25, box.y + box.height / 2);
+  await expect(page.getByRole('dialog').getByText('Détail agrégé du code d’erreur')).toBeVisible();
 });
 
 test('support : statut et note interne enregistrés et journalisés', async ({ page }) => {

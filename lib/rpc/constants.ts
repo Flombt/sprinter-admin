@@ -67,3 +67,58 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'moderation.view': 'Consultation d’un signalement',
   'moderation.decide': 'Décision de modération',
 };
+
+/* ------------------------------------------------------------------ Utilisateurs (4b) */
+
+export const USER_STATUSES = ['active', 'disabled', 'deleting'] as const;
+export type UserStatus = (typeof USER_STATUSES)[number];
+export const USER_STATUS_LABELS: Record<UserStatus, string> = {
+  active: 'Actif',
+  disabled: 'Désactivé',
+  deleting: 'Suppression en cours',
+};
+
+/** Tri sur liste blanche (contrat) ; préfixe `-` = décroissant. */
+export const USER_SORT_KEYS = ['signed_up_at', 'last_active_day', 'display_name', 'runs_count', 'distance_km'] as const;
+export type UserSortKey = (typeof USER_SORT_KEYS)[number];
+export const USER_SORT_LABELS: Record<UserSortKey, string> = {
+  signed_up_at: 'Inscription',
+  last_active_day: 'Dernière activité',
+  display_name: 'Nom affiché',
+  runs_count: 'Courses',
+  distance_km: 'Distance',
+};
+export const DEFAULT_USER_SORT = '-signed_up_at';
+
+export const USER_ACTIONS = ['disable', 'enable', 'revoke_sessions', 'process_deletion'] as const;
+export type UserAction = (typeof USER_ACTIONS)[number];
+
+export const AGE_BANDS = ['16-24', '25-34', '35-44', '45-54', '55+'] as const;
+
+/** Nombre de résultats exact jusqu'à 10 000, « 10 000+ » au-delà (contrat). */
+export const SEARCH_TOTAL_CAP = 10_000;
+
+export const CONSENT_PURPOSE_LABELS: Record<string, string> = {
+  terms: 'Conditions d’utilisation',
+  privacy_policy: 'Politique de confidentialité',
+  cloud_sync_runs: 'Sauvegarde des courses',
+  cloud_sync_routes: 'Sauvegarde des parcours GPS',
+  community_leaderboard: 'Classement communautaire',
+};
+
+export const SUPPORT_CATEGORY_LABELS: Record<string, string> = {
+  account: 'Compte',
+  sync: 'Synchronisation',
+  bug: 'Anomalie',
+  data_request: 'Demande sur les données',
+  other: 'Autre',
+};
+
+export const SUPPORT_STATUS_LABELS: Record<string, string> = {
+  open: 'Ouverte',
+  in_progress: 'En cours',
+  resolved: 'Résolue',
+  closed: 'Fermée',
+};
+
+export const SYNC_STATUS_LABELS: Record<string, string> = { ok: 'OK', partial: 'Partielle', error: 'Erreur' };

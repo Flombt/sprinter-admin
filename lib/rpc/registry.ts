@@ -7,6 +7,7 @@ import {
   whoamiInput,
   whoamiOutput,
 } from './schemas/core';
+import { getUserInput, searchUsersInput, searchUsersOutput, userDetail } from './schemas/users';
 
 /**
  * Liste blanche des RPC appelables par le site (contrat §2), avec les schémas zod
@@ -21,6 +22,8 @@ export const rpcRegistry = {
   admin_whoami: { input: whoamiInput, output: whoamiOutput },
   admin_overview: { input: overviewInput, output: overviewOutput },
   admin_list_audit: { input: listAuditInput, output: listAuditOutput },
+  admin_search_users: { input: searchUsersInput, output: searchUsersOutput },
+  admin_get_user: { input: getUserInput, output: userDetail },
 } as const satisfies Record<string, RpcDefinition>;
 
 export type RpcName = keyof typeof rpcRegistry;

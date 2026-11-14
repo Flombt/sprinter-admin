@@ -8,6 +8,20 @@ import {
   whoamiOutput,
 } from './schemas/core';
 import { analyticsInput, analyticsOutput, leaderboardInput, leaderboardOutput, runsStatsInput, runsStatsOutput } from './schemas/analytics';
+import {
+  exportInput,
+  exportOutput,
+  getConfigInput,
+  getConfigOutput,
+  listSupportInput,
+  listSupportOutput,
+  qualityInput,
+  qualityOutput,
+  setConfigInput,
+  setConfigOutput,
+  supportItem,
+  updateSupportInput,
+} from './schemas/ops';
 import { getUserInput, searchUsersInput, searchUsersOutput, userDetail } from './schemas/users';
 
 /**
@@ -28,6 +42,12 @@ export const rpcRegistry = {
   admin_leaderboard: { input: leaderboardInput, output: leaderboardOutput },
   admin_analytics: { input: analyticsInput, output: analyticsOutput },
   admin_runs_stats: { input: runsStatsInput, output: runsStatsOutput },
+  admin_quality: { input: qualityInput, output: qualityOutput },
+  admin_list_support: { input: listSupportInput, output: listSupportOutput },
+  admin_update_support: { input: updateSupportInput, output: supportItem },
+  admin_get_config: { input: getConfigInput, output: getConfigOutput },
+  admin_set_config: { input: setConfigInput, output: setConfigOutput },
+  admin_export_aggregates: { input: exportInput, output: exportOutput },
 } as const satisfies Record<string, RpcDefinition>;
 
 export type RpcName = keyof typeof rpcRegistry;

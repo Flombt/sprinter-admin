@@ -177,3 +177,52 @@ export const K_ANONYMITY = 10;
 
 export const VALIDITY_LABELS: Record<string, string> = { valid: 'Valides', suspect: 'Suspectes', invalid: 'Invalides' };
 export const SOURCE_LABELS: Record<string, string> = { sprinter: 'Sprinter', healthkit: 'Apple Santé', gpx: 'Import GPX' };
+
+/* ------------------------------------------------------------------ Exploitation (4d) */
+
+export const SUPPORT_STATUSES = ['open', 'in_progress', 'resolved', 'closed'] as const;
+export type SupportStatus = (typeof SUPPORT_STATUSES)[number];
+
+export const EXPORT_KINDS = ['daily_kpis', 'runs_by_day', 'versions', 'breakdown_country'] as const;
+export type ExportKind = (typeof EXPORT_KINDS)[number];
+export const EXPORT_KIND_LABELS: Record<ExportKind, string> = {
+  daily_kpis: 'KPI quotidiens',
+  runs_by_day: 'Courses par jour',
+  versions: 'Adoption des versions',
+  breakdown_country: 'Ventilation par pays (k ≥ 10)',
+};
+export const EXPORT_FORMATS = ['standard', 'excel_fr'] as const;
+export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+export const EXPORT_FORMAT_LABELS: Record<ExportFormat, string> = {
+  standard: 'CSV standard (virgule, UTF-8)',
+  excel_fr: 'Excel FR (point-virgule, BOM UTF-8, décimales à virgule)',
+};
+
+export const CONFIG_BOOLEAN_KEYS = [
+  'accounts_enabled',
+  'sync_enabled',
+  'routes_sync_enabled',
+  'support_enabled',
+  'leaderboard_enabled',
+  'profiles_enabled',
+  'profile_studio_enabled',
+  'profile_sharing_enabled',
+  'theme_library_enabled',
+  'profile_cards_enabled',
+] as const;
+export const CONFIG_KEYS = [...CONFIG_BOOLEAN_KEYS, 'min_version', 'maintenance'] as const;
+export type ConfigKey = (typeof CONFIG_KEYS)[number];
+export const CONFIG_LABELS: Record<ConfigKey, { label: string; description: string }> = {
+  accounts_enabled: { label: 'Comptes', description: 'Création de compte et connexion dans l’app.' },
+  sync_enabled: { label: 'Synchronisation des courses', description: 'Sauvegarde en ligne et synchronisation entre appareils.' },
+  routes_sync_enabled: { label: 'Sauvegarde des parcours GPS', description: 'Envoi des tracés pour les comptes qui l’ont choisi.' },
+  support_enabled: { label: 'Contacter le support', description: 'Formulaire de demande de support dans l’app.' },
+  leaderboard_enabled: { label: 'Classement communautaire', description: 'Classement facultatif sur inscription explicite (phase 7).' },
+  profiles_enabled: { label: 'Profils personnalisés', description: 'Profil privé et éditeur essentiel (phase 8a).' },
+  profile_studio_enabled: { label: 'Studio de personnalisation', description: 'Studio avancé, widgets et configurations (phase 8b).' },
+  profile_sharing_enabled: { label: 'Partage des profils', description: 'Publication, recherche et modération (phase 8c).' },
+  theme_library_enabled: { label: 'Bibliothèque de thèmes', description: 'Thèmes communautaires (phase 8d).' },
+  profile_cards_enabled: { label: 'Cartes de profil', description: 'Cartes et signatures partageables (phase 8d).' },
+  min_version: { label: 'Version minimale', description: 'En dessous, l’app affiche l’écran « Mise à jour requise ».' },
+  maintenance: { label: 'Message de maintenance', description: 'Bandeau affiché dans l’app (280 caractères au plus).' },
+};

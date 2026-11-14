@@ -109,7 +109,7 @@ test('paramètres : thème, densité et période par défaut (préférences loca
   await page.getByRole('radio', { name: 'Compacte' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-density', 'compact');
   await page.getByRole('radio', { name: '7 j' }).click();
-  await expect(page.getByText(/Période par défaut : 7 j/)).toBeVisible();
+  await expect(page.getByRole('radio', { name: '7 j', exact: true })).toBeChecked();
   await page.goto('/overview');
   await expect(page.getByText(/· 7 jours/)).toBeVisible();
   await page.reload();

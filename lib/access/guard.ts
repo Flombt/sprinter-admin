@@ -180,6 +180,9 @@ export type NavIcon =
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: '/overview', label: 'Vue d’ensemble', anyOf: ['overview.read'], icon: 'overview' },
   { href: '/users', label: 'Utilisateurs', anyOf: ['users.search'], icon: 'users' },
+  { href: '/rankings', label: 'Classements', anyOf: ['leaderboard.aggregate'], icon: 'rankings' },
+  { href: '/analytics', label: 'Analyses', anyOf: ['analytics.read'], icon: 'analytics' },
+  { href: '/runs', label: 'Courses', anyOf: ['analytics.read'], icon: 'runs' },
   { href: '/audit', label: 'Journal', anyOf: ['audit.read'], icon: 'audit' },
 ];
 

@@ -16,7 +16,7 @@ import {
 
 const owner: AdminIdentity = { role: 'owner', aal: 'aal2', capabilities: ['overview.read', 'users.search', 'audit.read'], moderation: true };
 const support: AdminIdentity = { role: 'support', aal: 'aal2', capabilities: ['overview.read', 'users.search', 'users.read_profile'], moderation: false };
-const analyst: AdminIdentity = { role: 'analyst', aal: 'aal2', capabilities: ['overview.read'], moderation: false };
+const analyst: AdminIdentity = { role: 'analyst', aal: 'aal2', capabilities: ['overview.read', 'analytics.read', 'leaderboard.aggregate'], moderation: false };
 
 const base: ProxyInput = {
   routeClass: 'protected',
@@ -92,7 +92,7 @@ describe('garde d’accès', () => {
   it('filtre la navigation selon les capacités', () => {
     expect(visibleNav(owner).map((i) => i.href)).toEqual(['/overview', '/users', '/audit']);
     expect(visibleNav(support).map((i) => i.href)).toEqual(['/overview', '/users']);
-    expect(visibleNav(analyst).map((i) => i.href)).toEqual(['/overview']);
+    expect(visibleNav(analyst).map((i) => i.href)).toEqual(['/overview', '/rankings', '/analytics', '/runs']);
     expect(activeNavHref('/users/1a2b3c4d-0000-4000-8000-000000000000', NAV_ITEMS)).toBe('/users');
     expect(activeNavHref('/audit', NAV_ITEMS)).toBe('/audit');
     expect(activeNavHref('/inconnu', NAV_ITEMS)).toBeNull();

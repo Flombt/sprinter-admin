@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { parseAsArrayOf, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { useId, useMemo, useState } from 'react';
 import { ChartCard, OKABE_ITO, TimeLineChart } from '@/components/charts';
+import { ExportButton } from '@/components/exports/export-button';
 import { SimpleTable } from '@/components/charts/simple-table';
 import { PageHeader } from '@/components/shell/page-header';
 import { ErrorState, Unavailable } from '@/components/states/states';
@@ -52,6 +53,7 @@ export function RunsView({ defaultPeriod }: { defaultPeriod: DefaultPeriodPref }
             Agrégats uniquement · {formatDay(resolved.from)} → {formatDay(resolved.to)} · {resolved.days} {plural(resolved.days, 'jour')}
           </>
         }
+        actions={<ExportButton kinds={['runs_by_day']} from={resolved.from} to={resolved.to} />}
       />
       <Card className="flex flex-wrap items-end gap-4 p-3">
         <div className="flex flex-col gap-1">

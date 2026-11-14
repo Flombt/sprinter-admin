@@ -6,6 +6,7 @@ import { parseAsArrayOf, parseAsString, parseAsStringLiteral, useQueryStates } f
 import { useId, useMemo, useState, type ReactNode } from 'react';
 import { COMPARE_COLOR, CategoryBarChart, ChartCard, OKABE_ITO, TimeLineChart } from '@/components/charts';
 import { CohortHeatmap } from '@/components/charts/cohort-heatmap';
+import { ExportButton } from '@/components/exports/export-button';
 import { SimpleTable } from '@/components/charts/simple-table';
 import { PageHeader } from '@/components/shell/page-header';
 import { EmptyState, ErrorState } from '@/components/states/states';
@@ -90,6 +91,7 @@ export function AnalyticsView({ defaultPeriod }: { defaultPeriod: DefaultPeriodP
             {compare ? <> · comparé à {formatDay(previous.from)} → {formatDay(previous.to)}</> : null}
           </>
         }
+        actions={<ExportButton kinds={['breakdown_country', 'daily_kpis']} from={range.from} to={range.to} />}
       />
       <Card className="flex flex-wrap items-end gap-4 p-3">
         <div className="flex flex-col gap-1">

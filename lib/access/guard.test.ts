@@ -14,8 +14,13 @@ import {
   type ProxyInput,
 } from './guard';
 
-const owner: AdminIdentity = { role: 'owner', aal: 'aal2', capabilities: ['overview.read', 'users.search', 'audit.read'], moderation: true };
-const support: AdminIdentity = { role: 'support', aal: 'aal2', capabilities: ['overview.read', 'users.search', 'users.read_profile'], moderation: false };
+const owner: AdminIdentity = {
+  role: 'owner',
+  aal: 'aal2',
+  capabilities: ['overview.read', 'users.search', 'audit.read', 'support.manage', 'config.write', 'quality.read'],
+  moderation: true,
+};
+const support: AdminIdentity = { role: 'support', aal: 'aal2', capabilities: ['overview.read', 'users.search', 'users.read_profile', 'support.manage'], moderation: false };
 const analyst: AdminIdentity = { role: 'analyst', aal: 'aal2', capabilities: ['overview.read', 'analytics.read', 'leaderboard.aggregate'], moderation: false };
 
 const base: ProxyInput = {
@@ -90,9 +95,11 @@ describe('garde d’accès', () => {
   });
 
   it('filtre la navigation selon les capacités', () => {
-    expect(visibleNav(owner).map((i) => i.href)).toEqual(['/overview', '/users', '/audit']);
-    expect(visibleNav(support).map((i) => i.href)).toEqual(['/overview', '/users']);
-    expect(visibleNav(analyst).map((i) => i.href)).toEqual(['/overview', '/rankings', '/analytics', '/runs']);
+    expect(visibleNav(owner).map((i) => i.href)).toEqual(['/overview', '/users', '/quality', '/support', '/audit', '/settings/app', '/settings']);
+    expect(visibleNav(support).map((i) => i.href)).toEqual(['/overview', '/users', '/support', '/settings']);
+    expect(visibleNav(analyst).map((i) => i.href)).toEqual(['/overview', '/rankings', '/analytics', '/runs', '/settings']);
+    expect(activeNavHref('/settings/app', NAV_ITEMS)).toBe('/settings/app');
+    expect(activeNavHref('/settings', NAV_ITEMS)).toBe('/settings');
     expect(activeNavHref('/users/1a2b3c4d-0000-4000-8000-000000000000', NAV_ITEMS)).toBe('/users');
     expect(activeNavHref('/audit', NAV_ITEMS)).toBe('/audit');
     expect(activeNavHref('/inconnu', NAV_ITEMS)).toBeNull();

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { listAuditOutput, overviewOutput, whoamiOutput } from '@/lib/rpc/schemas/core';
 import { analyticsOutput, leaderboardOutput, runsStatsOutput } from '@/lib/rpc/schemas/analytics';
+import { exportOutput, getConfigOutput, listSupportOutput, qualityOutput, setConfigOutput, supportItem } from '@/lib/rpc/schemas/ops';
 import { searchUsersOutput, userActionOutput, userDetail } from '@/lib/rpc/schemas/users';
 import { handleAuth } from './auth.ts';
 import { handleRpc } from './rpc.ts';
@@ -9,6 +10,7 @@ import { handleFunction } from './functions.ts';
 import { mockUuid } from './random.ts';
 import './users.ts';
 import './analytics.ts';
+import './ops.ts';
 import { expireRecentAuthentication } from './auth.ts';
 import { ADMIN_ACCOUNTS, MOCK_OTP_CODE, MOCK_TOTP_CODE, resetState } from './state.ts';
 
@@ -109,5 +111,30 @@ describe('faux backend conforme au contrat', () => {
       if (city.other) expect(city.other.accounts).toBeGreaterThanOrEqual(10);
     }
     expect(runsStatsOutput.parse(handleRpc('admin_runs_stats', { p_from: '2026-10-01', p_to: '2026-10-31' }, token).body).runs).toBeGreaterThan(0);
+  });
+
+  it('admin_quality, support, configuration et exports (4d)', () => {
+    const token = sessionToken(ADMIN_ACCOUNTS.owner);
+    expect(qualityOutput.parse(handleRpc('admin_quality', { p_from: '2026-10-01', p_to: '2026-10-31' }, token).body).crash_reporting.available).toBe(false);
+    const list = listSupportOutput.parse(handleRpc('admin_list_support', { p_status: ['open'], p_limit: 10 }, token).body);
+    expect(list.items.every((i) => i.status === 'open')).toBe(true);
+    const first = list.items[0];
+    if (!first) throw new Error('aucune demande');
+    expect(supportItem.parse(handleRpc('admin_update_support', { p_id: first.id, p_status: 'resolved', p_internal_note: 'Rappel fait' }, token).body).status).toBe('resolved');
+    expect(getConfigOutput.parse(handleRpc('admin_get_config', {}, token).body).items.length).toBe(12);
+    expect(setConfigOutput.parse(handleRpc('admin_set_config', { p_key: 'sync_enabled', p_value: true, p_reason: 'technical' }, token).body).value).toBe(true);
+    expect(handleRpc('admin_set_config', { p_key: 'min_version', p_value: { ios: '1.0', android: '1.0.0' }, p_reason: 'technical' }, token).body).toMatchObject({
+      message: 'invalid_parameter:value',
+    });
+    const excel = exportOutput.parse(handleRpc('admin_export_aggregates', { p_kind: 'daily_kpis', p_from: '2026-10-01', p_to: '2026-10-07', p_format: 'excel_fr' }, token).body);
+    expect(excel.csv.startsWith('\uFEFF')).toBe(true);
+    expect(excel.csv).toContain(';');
+    expect(excel.filename).toBe('sprinter-daily_kpis-2026-10-01_2026-10-07.csv');
+    expect(handleRpc('admin_export_aggregates', { p_kind: 'daily_kpis', p_from: '2025-01-01', p_to: '2026-10-07' }, token).body).toMatchObject({
+      message: 'invalid_parameter:period',
+    });
+    expect(handleRpc('admin_set_config', { p_key: 'sync_enabled', p_value: true, p_reason: 'technical' }, sessionToken(ADMIN_ACCOUNTS.analyst)).body).toMatchObject({
+      message: 'forbidden',
+    });
   });
 });

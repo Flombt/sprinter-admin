@@ -1,39 +1,18 @@
 'use client';
 
-import { LogOutIcon, UserRoundIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { UserRoundIcon } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ROLE_LABELS } from '@/lib/access/guard';
-import { postJson } from '@/lib/rpc/client';
-import { useAdmin } from './admin-context';
-import { hardNavigate } from '@/lib/navigation';
+
+const Content = dynamic(() => import('./account-menu-content').then((module) => module.AccountMenu), { ssr: false });
 
 export function AccountMenu() {
-  const { identity, email } = useAdmin();
+  const [loaded, setLoaded] = useState(false);
+  if (loaded) return <Content initialOpen />;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Menu du compte">
-          <UserRoundIcon aria-hidden="true" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel className="flex flex-col gap-0.5">
-          <span className="truncate text-sm font-medium text-fg">{email ?? 'Administrateur'}</span>
-          <span className="text-xs text-fg-muted">
-            {ROLE_LABELS[identity.role]} · <span className="font-mono">{identity.shortId}</span> · double facteur actif
-          </span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={() => {
-            void postJson('/api/auth/logout', {}).finally(() => hardNavigate('/login'));
-          }}
-        >
-          <LogOutIcon aria-hidden="true" />
-          Se déconnecter
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button variant="ghost" size="icon" aria-label={'Menu du compte'} onClick={() => setLoaded(true)}>
+      <UserRoundIcon aria-hidden="true" />
+    </Button>
   );
 }

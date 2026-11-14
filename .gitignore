@@ -27,3 +27,5 @@ playwright/.cache/
 # Système
 .DS_Store
 *.log
+/.lighthouseci/
+/.performance/

@@ -17,6 +17,8 @@
     "test:e2e": "playwright test",
     "guard:secrets": "node scripts/check-no-secrets.mjs",
     "guard:bundle": "node scripts/check-no-secrets.mjs --bundle",
+    "check:budget": "node scripts/check-js-budget.mjs",
+    "test:performance": "node scripts/run-lighthouse.mjs",
     "mock:backend": "node e2e/mock-backend/server.ts",
     "check": "npm run guard:secrets && npm run lint && npm run typecheck && npm test"
   },
@@ -46,6 +48,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
+    "@lhci/cli": "0.16.1",
     "@playwright/test": "1.65.1",
     "@tailwindcss/postcss": "4.3.5",
     "@types/node": "24.19.2",

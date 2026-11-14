@@ -1,41 +1,25 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { PREF_COOKIES, applyTheme, writePref, type ThemePref } from '@/lib/prefs';
+import type { ThemePref } from '@/lib/prefs';
 
-const LABELS: Record<ThemePref, string> = { system: 'Système', dark: 'Sombre', light: 'Clair' };
+const Content = dynamic(() => import('./theme-menu-content').then((module) => module.ThemeMenu), { ssr: false });
 
 export function ThemeMenu({ initial }: { initial: ThemePref }) {
-  const [theme, setTheme] = useState<ThemePref>(initial);
-  const Icon = theme === 'light' ? SunIcon : theme === 'dark' ? MoonIcon : MonitorIcon;
+  const [loaded, setLoaded] = useState(false);
+  const Icon = initial === 'light' ? SunIcon : initial === 'dark' ? MoonIcon : MonitorIcon;
+  if (loaded) return <Content initial={initial} initialOpen />;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Thème : ${LABELS[theme]}`}>
-          <Icon aria-hidden="true" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Thème</DropdownMenuLabel>
-        <DropdownMenuRadioGroup
-          value={theme}
-          onValueChange={(value) => {
-            const next = value as ThemePref;
-            setTheme(next);
-            writePref(PREF_COOKIES.theme, next);
-            applyTheme(next);
-          }}
-        >
-          {(Object.keys(LABELS) as ThemePref[]).map((key) => (
-            <DropdownMenuRadioItem key={key} value={key}>
-              {LABELS[key]}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={'Thème : ' + { system: 'Système', dark: 'Sombre', light: 'Clair' }[initial]}
+      onClick={() => setLoaded(true)}
+    >
+      <Icon aria-hidden="true" />
+    </Button>
   );
 }

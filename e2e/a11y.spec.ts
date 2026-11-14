@@ -41,3 +41,13 @@ test('clavier : ⌘K ouvre la palette, Échap la ferme, lien d’évitement pré
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Aller au contenu' })).toBeFocused();
 });
+
+test('clavier : une infobulle différée conserve le focus et expose sa définition', async ({ page }) => {
+  await login(page);
+  const trigger = page.getByRole('button', { name: 'Définition de l’indicateur Comptes créés', exact: true });
+  await trigger.focus();
+  await expect(page.getByRole('tooltip')).toBeVisible();
+  await expect(trigger).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('tooltip')).toHaveCount(0);
+});

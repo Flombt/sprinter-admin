@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ConfirmDialog, type ConfirmPayload } from '@/components/ui/confirm-dialog';
-import { Drawer } from '@/components/ui/dialog';
+import { Drawer } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useToast } from '@/components/ui/toast';
@@ -217,9 +217,9 @@ function ReportDrawer({ selection, onClose }: { selection: { item: ReportListIte
                 <span className="text-fg-muted">
                   Média {detail.element.media_ref ? <span className="font-mono text-fg">{detail.element.media_ref}</span> : null}
                 </span>
-                {detail.element.media_url ? (
-                  <a href={detail.element.media_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent-fg underline-offset-4 hover:underline">
-                    Ouvrir le média (lien temporaire)
+                {detail.element.media_ref ? (
+                  <a href={`/api/moderation/media?${new URLSearchParams({ report: selection.item.id, reason: selection.reason })}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent-fg underline-offset-4 hover:underline">
+                    Voir le média signalé
                     <ExternalLinkIcon className="size-4" aria-hidden="true" />
                   </a>
                 ) : null}

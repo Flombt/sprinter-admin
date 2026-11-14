@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducedMotion } from 'motion/react';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartTooltip } from './chart-tooltip';
@@ -8,7 +8,7 @@ import type { ChartProps } from './types';
 
 /** Barres et histogrammes (Recharts, chargé à la demande). */
 export default function CategoryBarChart({ data, xKey, series, formatValue, formatX, onSelect, height = 260, label }: ChartProps) {
-  const reduced = useReducedMotion();
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)');
   // Tracé progressif à la première apparition seulement (500 ms), jamais aux mises à jour.
   const [firstAppearance, setFirstAppearance] = useState(true);
   useEffect(() => {

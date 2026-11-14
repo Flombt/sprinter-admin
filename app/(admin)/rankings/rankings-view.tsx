@@ -14,7 +14,7 @@ import { CorrelationId, EmptyState, ErrorState } from '@/components/states/state
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Drawer } from '@/components/ui/dialog';
+import { Drawer } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { formatDate, formatInteger, plural } from '@/lib/format/fr';

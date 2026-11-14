@@ -1,16 +1,18 @@
 'use client';
 
-import { MoreHorizontalIcon, PanelLeftCloseIcon, PanelLeftOpenIcon, SearchIcon } from 'lucide-react';
+import { PanelLeftCloseIcon, PanelLeftOpenIcon, SearchIcon } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
+const PeriodPicker = dynamic(() => import('@/components/period/period-picker').then((module) => module.PeriodPicker), { ssr: false });
+const BottomNav = dynamic(() => import('./bottom-nav'), { ssr: false });
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
-import { PeriodPicker } from '@/components/period/period-picker';
 import { AccessReasonProvider } from '@/components/security/access-reason';
 import { ReauthProvider } from '@/components/security/reauth';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Kbd } from '@/components/ui/kbd';
-import { Tooltip, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ui/tooltip';
 import { activeNavHref, visibleNav, type NavItem } from '@/lib/access/guard';
 import { PREF_COOKIES, writePref, type SidebarPref } from '@/lib/prefs';
 import { cn } from '@/lib/utils';
@@ -27,7 +29,6 @@ const PERIOD_ROUTES = ['/overview', '/analytics', '/runs', '/quality'];
 export function AppShell({ session, sidebar, children }: { session: AdminSessionInfo; sidebar: SidebarPref; children: ReactNode }) {
   return (
     <AdminProvider value={session}>
-      <TooltipProvider delayDuration={200}>
         <AccessReasonProvider>
           <ReauthProvider>
             <CommandPaletteProvider>
@@ -36,13 +37,13 @@ export function AppShell({ session, sidebar, children }: { session: AdminSession
             </CommandPaletteProvider>
           </ReauthProvider>
         </AccessReasonProvider>
-      </TooltipProvider>
     </AdminProvider>
   );
 }
 
 function ShellLayout({ initialSidebar, children }: { initialSidebar: SidebarPref; children: ReactNode }) {
   const pathname = usePathname();
+  const mobile = useMediaQuery('(max-width: 639px)', false);
   const admin = useAdmin();
   const [collapsed, setCollapsed] = useState(initialSidebar === 'collapsed');
   const items = visibleNav(admin.identity);
@@ -117,7 +118,7 @@ function ShellLayout({ initialSidebar, children }: { initialSidebar: SidebarPref
         </main>
       </div>
 
-      <BottomNav items={items} active={active} />
+      {mobile ? <BottomNav items={items} active={active} /> : null}
     </div>
   );
 }
@@ -182,47 +183,3 @@ function PaletteButton() {
 }
 
 /** < 640 px : navigation basse (4 entrées + « Plus »). */
-function BottomNav({ items, active }: { items: NavItem[]; active: string | null }) {
-  const primary = items.slice(0, 4);
-  const rest = items.slice(4);
-  return (
-    <nav aria-label="Navigation principale" className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-stretch border-t border-line bg-surface sm:hidden">
-      {primary.map((item) => {
-        const Icon = NAV_ICONS[item.icon];
-        const isActive = active === item.href;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={isActive ? 'page' : undefined}
-            className={cn('flex flex-1 flex-col items-center justify-center gap-1 text-xs', isActive ? 'text-accent-fg' : 'text-fg-muted')}
-          >
-            <Icon className="size-5" aria-hidden="true" />
-            <span className="max-w-full truncate px-1">{item.label}</span>
-          </Link>
-        );
-      })}
-      {rest.length > 0 ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex flex-1 flex-col items-center justify-center gap-1 text-xs text-fg-muted">
-            <MoreHorizontalIcon className="size-5" aria-hidden="true" />
-            Plus
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top">
-            {rest.map((item) => {
-              const Icon = NAV_ICONS[item.icon];
-              return (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href} aria-current={active === item.href ? 'page' : undefined}>
-                    <Icon aria-hidden="true" />
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              );
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : null}
-    </nav>
-  );
-}

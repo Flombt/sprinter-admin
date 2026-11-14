@@ -50,6 +50,7 @@ export const AUDIT_ACTIONS = [
   'config.write',
   'support.update',
   'moderation.view',
+  'moderation.media',
   'moderation.decide',
 ] as const;
 
@@ -65,6 +66,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'config.write': 'Modification de la configuration',
   'support.update': 'Mise à jour d’une demande de support',
   'moderation.view': 'Consultation d’un signalement',
+  'moderation.media': 'Consultation d’un média signalé',
   'moderation.decide': 'Décision de modération',
 };
 

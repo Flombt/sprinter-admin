@@ -76,7 +76,7 @@ export function PeriodPicker({ defaultPeriod, className }: { defaultPeriod: Pres
       />
 
       <div className="flex items-center gap-2">
-        <Switch id={compareId} checked={compare} onCheckedChange={setCompare} />
+        <Switch id={compareId} checked={compare} onCheckedChange={setCompare} aria-label="Comparer à la période précédente" />
         <Label htmlFor={compareId} className="hidden text-sm font-normal text-fg-muted lg:inline">
           Comparer
         </Label>

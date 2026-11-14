@@ -43,6 +43,30 @@ test('sans habilitation de modération : ni entrée, ni accès', async ({ page }
   await expect(page.getByText('Accès refusé')).toBeVisible();
 });
 
+test('média signalé : consultation authentifiée et révocation après retrait', async ({ page, context }) => {
+  await login(page, ADMIN_ACCOUNTS.moderator);
+  await page.goto('/moderation');
+  const table = page.getByRole('table', { name: 'File des signalements' });
+  await table.getByRole('row', { name: /^Examiner le signalement/ }).filter({ hasText: 'Avatar' }).first().click();
+  const reason = page.getByRole('dialog', { name: 'Motif de consultation' });
+  await reason.getByLabel('Support').check();
+  await reason.getByRole('button', { name: 'Continuer' }).click();
+  const drawer = page.getByRole('dialog', { name: 'Signalement' });
+  const media = drawer.getByRole('link', { name: 'Voir le média signalé' });
+  const path = await media.getAttribute('href');
+  expect(path).toMatch(/^\/api\/moderation\/media\?/);
+  const readMedia = () => context.request.get(path!, { headers: { 'sec-fetch-site': 'same-origin' } });
+  const response = await readMedia();
+  expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toBe('image/png');
+  expect(response.headers()['cache-control']).toContain('no-store');
+  await drawer.getByRole('button', { name: 'Retirer', exact: true }).click();
+  const confirm = page.getByRole('dialog', { name: 'Retirer cet élément ?' });
+  await confirm.getByRole('button', { name: 'Retirer', exact: true }).click();
+  await expect(page.getByText('Décision enregistrée', { exact: true })).toBeVisible();
+  expect((await readMedia()).status()).toBe(404);
+});
+
 test('axe : file de modération et détail', async ({ page }) => {
   await login(page);
   await page.goto('/moderation');

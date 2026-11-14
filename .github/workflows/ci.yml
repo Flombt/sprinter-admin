@@ -22,6 +22,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -43,6 +45,20 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
       - name: Garde anti-secrets (bundle)
         run: npm run guard:bundle
+      - name: JavaScript initial par route (200 Ko gzip)
+        run: npm run check:budget
+      - name: Lighthouse et interactions sur le build de production synthétique
+        run: npm run test:performance
+      - name: Rapports de performance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-reports
+          path: .lighthouseci/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Gitleaks sur tout l'historique
+        run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1 git /repo --redact --no-banner
 
   e2e:
     name: Parcours Playwright + axe (faux backend synthétique)

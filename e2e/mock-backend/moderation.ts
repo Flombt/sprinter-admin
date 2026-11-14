@@ -85,6 +85,17 @@ registerRpc('admin_get_report', {
   },
 });
 
+registerRpc('admin_report_media', {
+  capability: 'moderation.read',
+  handler: (params, ctx) => {
+    const reason = requireReason(params);
+    const report = reports().find((item) => item.id === params.p_report_id);
+    if (!report?.element.media_ref || report.element.visibility === 'removed') throw fail.notFound();
+    appendAudit({ admin_id: ctx.user.id, admin_short: shortOf(ctx.user.id), action: 'moderation.media', target_user_id: null, target_short: report.target_short, reason, metadata: { report: report.id.slice(0, 8) } });
+    return { mime: 'image/png' };
+  },
+});
+
 registerRpc('admin_moderate', {
   capability: 'moderation.read',
   handler: (params, ctx) => {

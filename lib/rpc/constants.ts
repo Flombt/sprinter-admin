@@ -255,9 +255,14 @@ export const ELEMENT_KIND_LABELS: Record<string, string> = {
   link: 'Lien',
   widget: 'Widget',
   gallery: 'Galerie',
+  identity: 'Nom de présentation',
+  about: 'Présentation',
+  profile: 'Profil entier',
+  theme: 'Thème de la bibliothèque',
 };
 
 export const REPORT_REASON_LABELS: Record<string, string> = {
+  offensive: 'Contenu offensant',
   spam: 'Spam',
   harassment: 'Harcèlement',
   hateful: 'Contenu haineux',

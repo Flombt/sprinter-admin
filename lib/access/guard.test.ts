@@ -99,6 +99,9 @@ describe('garde d’accès', () => {
     expect(visibleNav(support).map((i) => i.href)).toEqual(['/overview', '/users', '/support', '/settings']);
     expect(visibleNav(analyst).map((i) => i.href)).toEqual(['/overview', '/rankings', '/analytics', '/runs', '/settings']);
     expect(activeNavHref('/settings/app', NAV_ITEMS)).toBe('/settings/app');
+    const moderator: AdminIdentity = { ...support, capabilities: [...support.capabilities, 'moderation.read', 'moderation.decide'], moderation: true };
+    expect(visibleNav(moderator).map((i) => i.href)).toContain('/moderation');
+    expect(visibleNav(support).map((i) => i.href)).not.toContain('/moderation');
     expect(activeNavHref('/settings', NAV_ITEMS)).toBe('/settings');
     expect(activeNavHref('/users/1a2b3c4d-0000-4000-8000-000000000000', NAV_ITEMS)).toBe('/users');
     expect(activeNavHref('/audit', NAV_ITEMS)).toBe('/audit');

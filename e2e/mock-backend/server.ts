@@ -6,6 +6,7 @@ import './rpc-core.ts';
 import './users.ts';
 import './analytics.ts';
 import './ops.ts';
+import './moderation.ts';
 import { resetState } from './state.ts';
 
 /**

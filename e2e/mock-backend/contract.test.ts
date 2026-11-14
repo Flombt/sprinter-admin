@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { listAuditOutput, overviewOutput, whoamiOutput } from '@/lib/rpc/schemas/core';
 import { analyticsOutput, leaderboardOutput, runsStatsOutput } from '@/lib/rpc/schemas/analytics';
+import { listReportsOutput, moderateOutput, reportDetail } from '@/lib/rpc/schemas/moderation';
 import { exportOutput, getConfigOutput, listSupportOutput, qualityOutput, setConfigOutput, supportItem } from '@/lib/rpc/schemas/ops';
 import { searchUsersOutput, userActionOutput, userDetail } from '@/lib/rpc/schemas/users';
 import { handleAuth } from './auth.ts';
@@ -11,6 +12,7 @@ import { mockUuid } from './random.ts';
 import './users.ts';
 import './analytics.ts';
 import './ops.ts';
+import './moderation.ts';
 import { expireRecentAuthentication } from './auth.ts';
 import { ADMIN_ACCOUNTS, MOCK_OTP_CODE, MOCK_TOTP_CODE, resetState } from './state.ts';
 
@@ -136,5 +138,20 @@ describe('faux backend conforme au contrat', () => {
     expect(handleRpc('admin_set_config', { p_key: 'sync_enabled', p_value: true, p_reason: 'technical' }, sessionToken(ADMIN_ACCOUNTS.analyst)).body).toMatchObject({
       message: 'forbidden',
     });
+  });
+
+  it('modération : file, contexte motivé et décision (8c)', () => {
+    const moderator = sessionToken(ADMIN_ACCOUNTS.moderator);
+    const list = listReportsOutput.parse(handleRpc('admin_list_reports', { p_status: ['open'] }, moderator).body);
+    expect(list.items.length).toBeGreaterThan(0);
+    const first = list.items[0];
+    if (!first) throw new Error('aucun signalement');
+    expect(handleRpc('admin_get_report', { p_report_id: first.id }, moderator).body).toMatchObject({ message: 'reason_required' });
+    const detail = reportDetail.parse(handleRpc('admin_get_report', { p_report_id: first.id, p_reason: 'support' }, moderator).body);
+    expect(detail.report.id).toBe(first.id);
+    const decided = moderateOutput.parse(handleRpc('admin_moderate', { p_report_id: first.id, p_decision: 'hide', p_reason: 'support' }, moderator).body);
+    expect(decided).toMatchObject({ decision: 'hide', status: 'actioned' });
+    expect(handleRpc('admin_list_reports', {}, sessionToken(ADMIN_ACCOUNTS.support)).body).toMatchObject({ message: 'forbidden' });
+    expect(handleRpc('admin_list_reports', {}, sessionToken(ADMIN_ACCOUNTS.analyst)).body).toMatchObject({ message: 'forbidden' });
   });
 });

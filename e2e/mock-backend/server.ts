@@ -5,6 +5,7 @@ import { handleRpc } from './rpc.ts';
 import './rpc-core.ts';
 import './users.ts';
 import './analytics.ts';
+import './ops.ts';
 import { resetState } from './state.ts';
 
 /**

@@ -1,0 +1,5 @@
+# Historical synthetic Playwright and unit-test fixtures.
+db7f0d38cf30cbd90071686cd65bb161d6da140e:playwright.config.ts:generic-api-key:43
+db7f0d38cf30cbd90071686cd65bb161d6da140e:playwright.config.ts:generic-api-key:44
+db7f0d38cf30cbd90071686cd65bb161d6da140e:e2e/helpers.ts:generic-api-key:10
+620b663807685c13f22936f55dd52b0ef66a788b:lib/session/meta.test.ts:generic-api-key:13

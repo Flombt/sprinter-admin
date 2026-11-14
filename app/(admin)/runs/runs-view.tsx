@@ -9,7 +9,7 @@ import { SimpleTable } from '@/components/charts/simple-table';
 import { PageHeader } from '@/components/shell/page-header';
 import { ErrorState, Unavailable } from '@/components/states/states';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Drawer } from '@/components/ui/dialog';
+import { Drawer } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { EMPTY, formatDay, formatDayShort, formatHours, formatInteger, formatKm, formatPace, formatPercent, plural } from '@/lib/format/fr';

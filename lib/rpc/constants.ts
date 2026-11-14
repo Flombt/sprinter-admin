@@ -50,6 +50,7 @@ export const AUDIT_ACTIONS = [
   'config.write',
   'support.update',
   'moderation.view',
+  'moderation.media',
   'moderation.decide',
 ] as const;
 
@@ -65,6 +66,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   'config.write': 'Modification de la configuration',
   'support.update': 'Mise à jour d’une demande de support',
   'moderation.view': 'Consultation d’un signalement',
+  'moderation.media': 'Consultation d’un média signalé',
   'moderation.decide': 'Décision de modération',
 };
 
@@ -225,4 +227,49 @@ export const CONFIG_LABELS: Record<ConfigKey, { label: string; description: stri
   profile_cards_enabled: { label: 'Cartes de profil', description: 'Cartes et signatures partageables (phase 8d).' },
   min_version: { label: 'Version minimale', description: 'En dessous, l’app affiche l’écran « Mise à jour requise ».' },
   maintenance: { label: 'Message de maintenance', description: 'Bandeau affiché dans l’app (280 caractères au plus).' },
+};
+
+/* ------------------------------------------------------------------ Modération (8c) */
+
+export const REPORT_STATUSES = ['open', 'actioned', 'dismissed'] as const;
+export type ReportStatus = (typeof REPORT_STATUSES)[number];
+export const REPORT_STATUS_LABELS: Record<string, string> = {
+  open: 'À traiter',
+  actioned: 'Traité',
+  dismissed: 'Classé sans suite',
+};
+
+export const MODERATION_DECISIONS = ['hide', 'remove', 'restore', 'dismiss'] as const;
+export type ModerationDecision = (typeof MODERATION_DECISIONS)[number];
+export const MODERATION_DECISION_LABELS: Record<ModerationDecision, string> = {
+  hide: 'Masquer',
+  remove: 'Retirer',
+  restore: 'Restaurer',
+  dismiss: 'Classer sans suite',
+};
+
+export const ELEMENT_KIND_LABELS: Record<string, string> = {
+  avatar: 'Avatar',
+  banner: 'Bannière',
+  bio: 'Présentation',
+  status: 'Statut',
+  handle: 'Pseudo',
+  link: 'Lien',
+  widget: 'Widget',
+  gallery: 'Galerie',
+  identity: 'Nom de présentation',
+  about: 'Présentation',
+  profile: 'Profil entier',
+  theme: 'Thème de la bibliothèque',
+};
+
+export const REPORT_REASON_LABELS: Record<string, string> = {
+  offensive: 'Contenu offensant',
+  spam: 'Spam',
+  harassment: 'Harcèlement',
+  hateful: 'Contenu haineux',
+  sexual: 'Contenu sexuel',
+  impersonation: 'Usurpation d’identité',
+  personal_data: 'Données personnelles exposées',
+  other: 'Autre',
 };

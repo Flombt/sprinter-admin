@@ -185,6 +185,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: '/runs', label: 'Courses', anyOf: ['analytics.read'], icon: 'runs' },
   { href: '/quality', label: 'Qualité', anyOf: ['quality.read'], icon: 'quality' },
   { href: '/support', label: 'Support', anyOf: ['support.manage'], icon: 'support' },
+  { href: '/moderation', label: 'Modération', anyOf: ['moderation.read', 'moderation.decide'], icon: 'moderation' },
   { href: '/audit', label: 'Journal', anyOf: ['audit.read'], icon: 'audit' },
   { href: '/settings/app', label: 'Configuration', anyOf: ['config.write'], icon: 'config' },
   { href: '/settings', label: 'Paramètres', anyOf: ['overview.read'], icon: 'settings' },

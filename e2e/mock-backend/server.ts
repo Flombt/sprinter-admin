@@ -6,6 +6,7 @@ import './rpc-core.ts';
 import './users.ts';
 import './analytics.ts';
 import './ops.ts';
+import './moderation.ts';
 import { resetState } from './state.ts';
 
 /**
@@ -72,6 +73,13 @@ const server = createServer(async (req, res) => {
     if (rpcMatch && method === 'POST') return send(res, handleRpc(rpcMatch[1] as string, body, token));
 
     const fnMatch = /^\/functions\/v1\/([a-z-]+)$/.exec(url.pathname);
+    if (fnMatch?.[1] === 'admin-report-media' && method === 'GET') {
+      const access = handleRpc('admin_report_media', { p_report_id: url.searchParams.get('report'), p_reason: url.searchParams.get('reason') }, token);
+      if (access.status !== 200) return send(res, access);
+      res.writeHead(200, { 'content-type': 'image/png', 'cache-control': 'private, no-store' });
+      res.end(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jY1EAAAAASUVORK5CYII=', 'base64'));
+      return;
+    }
     const fnResponse = fnMatch && method === 'POST' ? handleFunction(fnMatch[1] as string, body, token) : null;
     if (fnResponse) return send(res, fnResponse);
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useReducedMotion } from 'motion/react';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { useEffect, useState } from 'react';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ChartTooltip } from './chart-tooltip';
@@ -8,7 +8,7 @@ import type { ChartProps } from './types';
 
 /** Courbes temporelles (Recharts, chargé à la demande) ; tracé progressif seulement à la première apparition. */
 export default function TimeLineChart({ data, xKey, series, formatValue, formatX, onSelect, height = 260, label }: ChartProps) {
-  const reduced = useReducedMotion();
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)');
   // Tracé progressif à la première apparition seulement (500 ms), jamais aux mises à jour.
   const [firstAppearance, setFirstAppearance] = useState(true);
   useEffect(() => {

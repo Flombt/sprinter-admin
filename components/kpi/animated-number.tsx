@@ -1,7 +1,7 @@
 'use client';
 
-import { useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 
 const DURATION_MS = 400;
 
@@ -10,7 +10,7 @@ const DURATION_MS = 400;
  * (changement de période) ; jamais au premier affichage ni en mouvement réduit (§10.3).
  */
 export function AnimatedNumber({ value, format }: { value: number | null; format: (value: number | null) => string }) {
-  const reduced = useReducedMotion();
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)');
   const [display, setDisplay] = useState<number | null>(value);
   const previous = useRef<number | null>(value);
 

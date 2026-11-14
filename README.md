@@ -55,3 +55,17 @@ directement dans Vercel. Le premier administrateur est créé par le runbook du 
 
 Une branche par sous-phase, empilées : `feat/p4a-socle` → `feat/p4b-users` → `feat/p4c-rankings` →
 `feat/p4d-ops` → `feat/p8c-moderation`. Aucune fonctionnalité n'est commitée directement sur `main`.
+
+## Vérification de la finalisation
+
+Les écrans conservent la pile Next.js, Radix, TanStack Query et Table, Recharts et Motion. Les tableaux, formulaires avancés, menus et infobulles sont chargés par modules différés. Le premier focus d’une infobulle garde le focus clavier après le chargement.
+
+- `npm run check` vérifie les secrets, le lint, TypeScript et les tests unitaires.
+- `npm run build && npm run check:budget` mesure les modules initiaux par route, runtime Next inclus, en gzip niveau 9. Le budget est de 200 Kio. Les modules différés sont téléchargés lors de leur affichage ou de leur première interaction.
+- `npm run test:e2e` exécute les parcours Playwright et axe sur des données synthétiques, dont la lecture d’un média signalé et sa révocation après retrait.
+- `npm run test:performance` reconstruit l’application pour le backend synthétique local, lance le build de production sur le port 3101 et mesure trois chargements Lighthouse authentifiés. Les rapports sont dans `.lighthouseci/`. Le LCP médian doit rester sous 1 500 ms. Les durées Event Timing de trois changements de période doivent rester sous 200 ms. Ces observations décrivent cette recette de laboratoire.
+- La CI conserve les rapports de performance et vérifie les secrets sur tout l’historique avec Gitleaks.
+
+La route `/api/moderation/media` relaie l’Edge Function `admin-report-media` avec le JWT AAL2 de l’administrateur. Le média publié signalé est relu après contrôle du motif, de la capacité et de la visibilité. Aucun fichier média n’est conservé par le site. La migration mobile `0020_moderation_media` est requise.
+
+Le déploiement sur le projet Supabase réel, la configuration SMTP et OAuth, l’administration initiale et la recette sur appareils restent à réaliser avant l’ouverture aux utilisateurs.

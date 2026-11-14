@@ -25,6 +25,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: { optimizePackageImports: ['radix-ui'] },
   poweredByHeader: false,
   reactStrictMode: true,
   devIndicators: false,

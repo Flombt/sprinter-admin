@@ -48,7 +48,8 @@ export function getSupabaseEnv(): SupabaseEnv {
     throw new Error('NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY sont requis.');
   }
   const parsed = new URL(url);
-  if (isProduction && parsed.protocol !== 'https:') throw new Error('NEXT_PUBLIC_SUPABASE_URL doit être en HTTPS.');
+  const loopback = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '[::1]';
+  if (isProduction && parsed.protocol !== 'https:' && !(loopback && parsed.protocol === 'http:')) throw new Error('NEXT_PUBLIC_SUPABASE_URL doit être en HTTPS.');
   assertPublishableKey(publishableKey);
   cachedSupabaseEnv = { url: parsed.origin, publishableKey };
   return cachedSupabaseEnv;

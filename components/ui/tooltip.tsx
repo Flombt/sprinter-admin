@@ -1,34 +1,33 @@
 'use client';
 
-import { Tooltip as TooltipPrimitive } from 'radix-ui';
-import type { ComponentProps, ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+import dynamic from 'next/dynamic';
+import { useState, type ReactNode } from 'react';
 
-export const TooltipProvider = TooltipPrimitive.Provider;
+const Content = dynamic(() => import('./tooltip-content').then((module) => module.Tooltip), { ssr: false });
 
-export function TooltipContent({ className, sideOffset = 6, children, ...props }: ComponentProps<typeof TooltipPrimitive.Content>) {
+/** Charge le positionnement des infobulles à leur premier survol ou focus clavier. */
+export function Tooltip({
+  content,
+  children,
+  side,
+}: {
+  content: ReactNode;
+  children: ReactNode;
+  side?: 'top' | 'bottom' | 'left' | 'right';
+}) {
+  const [interaction, setInteraction] = useState<'pointer' | 'keyboard' | null>(null);
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        sideOffset={sideOffset}
-        className={cn(
-          'z-50 max-w-72 animate-fade-in rounded-md border border-line bg-surface-2 px-3 py-2 text-sm text-fg shadow-card',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Portal>
-  );
-}
-
-/** Infobulle accessible : le déclencheur doit être focalisable (bouton). */
-export function Tooltip({ content, children, side }: { content: ReactNode; children: ReactNode; side?: 'top' | 'bottom' | 'left' | 'right' }) {
-  return (
-    <TooltipPrimitive.Root delayDuration={200}>
-      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-      <TooltipContent side={side}>{content}</TooltipContent>
-    </TooltipPrimitive.Root>
+    <span
+      onPointerEnter={() => setInteraction((current) => current ?? 'pointer')}
+      onFocusCapture={() => setInteraction((current) => current ?? 'keyboard')}
+    >
+      {interaction ? (
+        <Content content={content} side={side} restoreFocus={interaction === 'keyboard'}>
+          {children}
+        </Content>
+      ) : (
+        children
+      )}
+    </span>
   );
 }
